@@ -1,0 +1,78 @@
+[
+  {
+    "id": "config_gui",
+    "keywords": [
+      ["open", "config"],
+      ["open", "gui"],
+      ["config", "gui"],
+      ["how", "menu"]
+    ],
+    "answer": "To open the config GUI, use `/na`"
+  },
+  {
+    "id": "scale_hud",
+    "keywords": [
+      ["scale", "hud"],
+      ["resize", "hud"],
+      ["hud", "size"],
+      ["bigger", "hud"],
+      ["smaller", "hud"]
+    ],
+    "answer": "Click and hold the HUD element and use your scroll wheel to scale it."
+  },
+  {
+    "id": "autoterm_delay",
+    "keywords": [
+      ["autoterm", "delay"],
+      ["autoterm", "settings"],
+      ["auto term", "delay"],
+      ["auto terminal", "delay"],
+      ["autoterminal", "delay"]
+    ],
+    "answer": "The delay is ping based so the median value should be around 150 - ping. If this result is negative then you probably can use 0 delay!\nRandom delay is based on a Gaussian Distribution so your min and max should usually be around 80% - 120% of the calculated median respectively.\n\nFor example: if you have 100 ping it will be 150 - 100 = 50. So your delay range should be 40 - 60ms."
+  },
+  {
+    "id": "custom_cosmetics",
+    "keywords": [
+      ["custom", "name"],
+      ["custom", "names"],
+      ["player", "size"],
+      ["player", "sizes"]
+    ],
+    "answer": "You can get custom names and player sizes by donating to the mod. Ping <@&NOAMM_ROLE_ID> regarding how to donate."
+  },
+  {
+    "id": "crash_help",
+    "keywords": [
+      ["game", "crash"],
+      ["game", "crashing"],
+      ["game", "closes"],
+      ["minecraft", "closes"]
+    ],
+    "answer": "If you want help, first you need to provide sufficient information so others can understand the problem. Upload relevant crash reports, `latest.log`, or `hs_err_pid<n>.log` files straight into Discord or to https://mclo.gs/ and send the result in a place like #general with context about your issue — someone will probably help you."
+  },
+  {
+    "id": "bannable",
+    "keywords": [
+      ["bannable"],
+      ["get", "banned"],
+      ["will", "ban"],
+      ["spec", "safe"]
+    ],
+    "answer": "Features in the cheat version of NA are made to be spec-safe and watchdog-safe, so probably not. But be sure to think about the settings you use. Also understand that every mod has some inherent risk involved, no matter if it's a cheat or not."
+  },
+  {
+    "id": "github_action",
+    "keywords": [
+      ["beta"],
+      ["dev", "version"],
+      ["dev", "build"],
+      ["latest", "version"],
+      ["latest", "build"],
+      ["how", "update"],
+      ["new", "version"],
+      ["new", "update"]
+    ],
+    "answer": "GitHub Actions are like betas of the mod you can download between releases. To get one:\n1. Go to the NA GitHub\n2. Log into GitHub\n3. Go to the **Actions** tab at the top\n4. Click the latest action applicable to your version (e.g. `main` branch or `1.21.11` branch)\n5. Download the zip file at the bottom and extract it\n6. Use the respective `.jar` mod in the folder relevant to you (cheat or legit)"
+  }
+]

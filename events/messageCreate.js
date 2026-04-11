@@ -1,44 +1,46 @@
 const { Events } = require('discord.js')
+const path = require('node:path')
+const fs = require('node:fs')
 
-const matchDelayMessage = content => delayMessages.some(keyword => content.includes(keyword))
-const matchAutotermMessage = content => autotermMessages.some(keyword => content.includes(keyword))
+const faqsPath = path.join(__dirname, '..', 'faqs.json')
+const faqs = JSON.parse(fs.readFileSync(faqsPath, 'utf8'))
 
-const autotermMessages = ["autoterm", "autoterminal", "auto term", "auto terminal"]
-const delayMessages = ["delay", "settings"]
-const delay = 3000
+const cooldown = 3000
+const lastSent = new Map()
 
-let lastSent = 0
-
-const replyMessage = [
-    "The delay is ping based so the median value should be around 150 - ping. If this result is negative then you probably can use 0 delay!",
-    "Random delay is based on a Gaussian Distribution so your min and max should usually be around 80% - 120% of the calculated median respectively.",
-    "",
-    "For example: if you have 100 ping it will be 150 - 100 = 50. so your delay range should be 40 - 60ms"
-]
+const matchFaq = content => {
+    for (const faq of faqs) {
+        for (const group of faq.keywords) {
+            if (group.every(keyword => content.includes(keyword))) {
+                return faq
+            }
+        }
+    }
+    return null
+}
 
 module.exports = {
     name: Events.MessageCreate,
     once: false,
     async execute(message) {
         if (message.author.bot) return
+        if (!message.channel) return
 
         const content = message.content.toLowerCase()
-        const channel = message.channel
-        const time = Date.now()
-        const timeElapsed = time - lastSent
+        const faq = matchFaq(content)
+        
+        if (!faq) return
 
-        if (timeElapsed < delay) return
-        if (!channel) return
+        const now = Date.now()
+        const last = lastSent.get(faq.id) || 0
+        
+        if (now - last < cooldown) return
+        lastSent.set(faq.id, now)
 
-        lastSent = time
-
-        if (matchDelayMessage(content) && matchAutotermMessage(content)) {
-            try {
-                await message.reply(replyMessage.join('\n'))
-            }
-            catch (err) {
-                console.error("Failed to send message:", err)
-            }
+        try {
+            await message.reply(faq.answer)
+        } catch (err) {
+            console.error("Failed to send message:", err)
         }
     }
 }
