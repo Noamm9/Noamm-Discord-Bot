@@ -29,5 +29,3 @@ for (const file of eventFiles) {
 
 client.on(Events.ClientReady, c => console.log(`Successfully logged in as ${c.user.tag}`))
 client.login(token).catch(err => console.error("Login failed:", err.message))
-
-setTimeout(() => import("./deploycommands.js"), 5000)
