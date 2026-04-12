@@ -74,5 +74,12 @@
       ["new", "update"]
     ],
     "answer": "GitHub Actions are like betas of the mod you can download between releases. To get one:\n1. Go to the NA GitHub\n2. Log into GitHub\n3. Go to the **Actions** tab at the top\n4. Click the latest action applicable to your version (e.g. `main` branch or `1.21.11` branch)\n5. Download the zip file at the bottom and extract it\n6. Use the respective `.jar` mod in the folder relevant to you (cheat or legit)"
+  },
+  {
+    "id": "api_down",
+    "keywords": [
+      ["api", "down"],
+      ["api", "status"]
+    ]
   }
 ]
