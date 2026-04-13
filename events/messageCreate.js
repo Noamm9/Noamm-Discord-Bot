@@ -1,4 +1,4 @@
-const { Events, MessageFlags } = require('discord.js')
+const { Events } = require('discord.js')
 const path = require('node:path')
 const fs = require('node:fs')
 
@@ -58,11 +58,7 @@ module.exports = {
         lastSent.set(faq.id, now)
 
         try {
-            if (faq.id !== "api_down") 
-                await message.reply({
-                content: faq.answer,
-                flags: MessageFlags.SuppressNotifications
-            })
+            if (faq.id !== "api_down") await message.reply(faq.answer)
             else {
                 if (now - lastApiCheck < apiDelay) {
                     let time = Math.floor((now - lastApiCheck) / 1000)
