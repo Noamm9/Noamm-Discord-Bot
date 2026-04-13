@@ -1,7 +1,6 @@
-require('dotenv').config()
-const { Client, Events, GatewayIntentBits, Collection } = require("discord.js")
-const fs = require('node:fs')
 const path = require('node:path')
+const fs = require('node:fs')
+const { Client, Events, GatewayIntentBits, Collection } = require("discord.js")
 
 const token = process.env.DISCORD_BOT_TOKEN
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] })
