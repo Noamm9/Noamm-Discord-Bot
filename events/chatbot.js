@@ -1,4 +1,4 @@
-const { Events } = require('discord.js')
+const { Events, MessageFlags } = require('discord.js')
 const ai = require("../ai/AIService")
 
 const bot_commands = "1450943955624792300"
@@ -30,8 +30,13 @@ module.exports = {
 
             if (cleanMessage.length > 0) try {
                 await message.channel.sendTyping()
-                const aiResponse = (await ai.askAI(message.author.id, cleanMessage)).substring(0, 1800)
-                await message.reply(aiResponse)
+                const aiResponse = await ai.askAI(message.author.id, cleanMessage)
+
+                await message.reply({
+                    content: aiResponse.substring(0, 1800),
+                    allowedMentions: { parse: [], roles: [], users: [], repliedUser: true },
+                    flags: [MessageFlags.SuppressNotifications]
+                })
             }
             catch (err) {
                 console.error("AI Reply Error:", err)

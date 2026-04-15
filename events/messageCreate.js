@@ -1,78 +1,49 @@
 const { Events } = require('discord.js')
-const path = require('node:path')
-const fs = require('node:fs')
+const ai = require("../ai/AIService")
+const faqs = require("../faqs.json")
 
-const faqsPath = path.join(__dirname, '..', 'faqs.json')
-let faqs = []
-try {
-    faqs = JSON.parse(fs.readFileSync(faqsPath, 'utf8'))
-}
-catch (err) {
-    console.error("Failed to load faqs.json:", err)
-    process.exit()
-}
-
-const cooldown = 3_000
+const cooldown = 5_000
 const lastSent = new Map()
-
-const matchFaq = content => {
-    for (const faq of faqs) for (const group of faq.keywords) {
-        if (group.every(keyword => content.includes(keyword))) {
-            return faq
-        }
-    }
-
-    return null
-}
-
 let lastApiStatus = false
 const apiDelay = 150_000
-let lastApiCheck = Date.now() - apiDelay * 2
-const apiUrl = "http://api:3000/health"
+let lastApiCheck = 0
 
-async function getApiStatus() {
-    try {
-        return (await fetch(apiUrl)).ok
-    }
-    catch (e) {
-        return false
-    }
-}
+const keywords = [...new Set(faqs.flatMap(faq => (faq.keywords || []).flat()))]
+const shouldTriggerAI = content => content.length >= 15 && keywords.some(word => content.includes(word))
+const getApiStatus = async () => eval('(async () => { try { return (await fetch("http://api:3000/health")).ok } catch(e) { return false } })()')
+const isApiKeyword = content => (faqs.find(f => f.id === "api_down")?.keywords || []).some(group => group.every(k => content.includes(k))) ? "api_down" : null
 
 module.exports = {
     name: Events.MessageCreate,
     once: false,
     async execute(message) {
-        if (message.author.bot) return
-        if (! message.channel) return
-
+        if (message.author.bot || ! message.guild) return
         const content = message.content.toLowerCase()
-        const faq = matchFaq(content)
+        const lastTime = lastSent.get(message.channel.id) || 0
 
-        if (! faq) return
-
-        const now = Date.now()
-        const last = lastSent.get(faq.id) || 0
-
-        if (now - last < cooldown) return
-        lastSent.set(faq.id, now)
+        if (! shouldTriggerAI(content) || (Date.now() - lastTime < cooldown)) return
+        const matchedId = isApiKeyword(content) || await ai.classifyFAQ(message.content, faqs)
+        const faq = faqs.find(f => f.id === matchedId)
+        if (! faq || matchedId === "null") return
 
         try {
-            if (faq.id !== "api_down") await message.reply(faq.answer)
-            else {
-                if (now - lastApiCheck < apiDelay) {
-                    let time = Math.floor((now - lastApiCheck) / 1000)
-                    await message.reply(`Api is currently ${lastApiStatus ? "up" : "down"}, last checked: ${time} seconds ago`)
-                    return
+            lastSent.set(message.channel.id, Date.now())
+
+            if (faq.id === "api_down") {
+                if (Date.now() - lastApiCheck > apiDelay) {
+                    lastApiStatus = await getApiStatus()
+                    lastApiCheck = Date.now()
                 }
 
-                lastApiCheck = now
-                lastApiStatus = await getApiStatus()
-                await message.reply(`Api is currently ${lastApiStatus ? "up" : "down"}`)
+                return await message.reply(`The API is currently **${ lastApiStatus ? "up" : "down" }**.\n*Last checked: ${
+                    Math.floor((Date.now() - lastApiCheck) / 1000)
+                }s ago*`)
             }
+
+            await message.reply({ content: faq.answer, allowedMentions: { repliedUser: true } })
         }
         catch (err) {
-            console.error("Failed to send message:", err)
+            console.error("FAQ Reply Error:", err)
         }
     }
 }
